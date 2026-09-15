@@ -1,0 +1,17 @@
+.git
+.github
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+cache/
+downloads/
+log.txt
+*.zip
+node_modules/
+dist/
+.cache/
