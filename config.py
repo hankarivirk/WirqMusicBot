@@ -10,14 +10,28 @@ load_dotenv()
 
 _BASE_DIR = Path(__file__).resolve().parent
 
+
+def _int_env(name: str, default: int = 0) -> int:
+    """Read an integer environment variable, treating blank values as default."""
+    value = os.getenv(name, "")
+    if not value or not value.strip():
+        return default
+    try:
+        return int(value.strip())
+    except ValueError:
+        raise ValueError(f"{name} must be a valid integer, got: {value!r}")
+
+
 class Config:
     def __init__(self):
         # Core Telegram API credentials
-        self.API_ID = int(os.getenv("API_ID", 0))
+        self.API_ID = _int_env("API_ID")
         self.API_HASH = os.getenv("API_HASH", "")
         self.BOT_TOKEN = os.getenv("BOT_TOKEN", "")
-        self.OWNER_ID = int(os.getenv("OWNER_ID", 0))
-        self.LOGGER_ID = int(os.getenv("LOGGER_ID", 0))
+        self.OWNER_ID = _int_env("OWNER_ID")
+        # LOGGER_ID is optional. Blank/invalid logger configuration must not
+        # prevent the bot from starting.
+        self.LOGGER_ID = _int_env("LOGGER_ID")
 
         # Database
         self.MONGO_URL = os.getenv("MONGO_URL", "")
@@ -28,10 +42,10 @@ class Config:
         self.SESSION3 = os.getenv("SESSION3", None)
 
         # Limits
-        self.DURATION_LIMIT = int(os.getenv("DURATION_LIMIT", 60)) * 60
-        self.MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE", 2000)) * 1024 * 1024
-        self.QUEUE_LIMIT = int(os.getenv("QUEUE_LIMIT", 50))
-        self.PLAYLIST_LIMIT = int(os.getenv("PLAYLIST_LIMIT", 200))
+        self.DURATION_LIMIT = _int_env("DURATION_LIMIT", 60) * 60
+        self.MAX_FILE_SIZE = _int_env("MAX_FILE_SIZE", 2000) * 1024 * 1024
+        self.QUEUE_LIMIT = _int_env("QUEUE_LIMIT", 50)
+        self.PLAYLIST_LIMIT = _int_env("PLAYLIST_LIMIT", 200)
 
         # Identity & Community Links
         self.BOT_NAME = "Wirq Music Bot"
@@ -43,12 +57,12 @@ class Config:
 
         # Automation & Auto Cleanup
         self.AUTO_LEAVE = os.getenv("AUTO_LEAVE", "True").lower() == "true"
-        self.AUTO_LEAVE_GRACE = int(os.getenv("AUTO_LEAVE_GRACE", 15))
+        self.AUTO_LEAVE_GRACE = _int_env("AUTO_LEAVE_GRACE", 15)
         self.AUTO_LEAVE_EXCLUDE = [
             int(cid) for cid in os.getenv("AUTO_LEAVE_EXCLUDE", "").split(",") if cid.strip()
         ]
-        self.CLEANUP_INTERVAL = int(os.getenv("CLEANUP_INTERVAL", 1800))  # 30 mins
-        self.CLEANUP_MAX_AGE = int(os.getenv("CLEANUP_MAX_AGE", 7200))    # 2 hours
+        self.CLEANUP_INTERVAL = _int_env("CLEANUP_INTERVAL", 1800)
+        self.CLEANUP_MAX_AGE = _int_env("CLEANUP_MAX_AGE", 7200)
 
         # Feature flags
         self.AUTO_END = os.getenv("AUTO_END", "True").lower() == "true"
@@ -56,7 +70,7 @@ class Config:
         self.VIDEO_PLAY = os.getenv("VIDEO_PLAY", "True").lower() == "true"
         self.LANG_CODE = os.getenv("LANG_CODE", "en")
 
-        # Thumbnail configuration (Section 6)
+        # Thumbnail configuration
         self.START_THUMBNAIL_URL = os.getenv(
             "START_THUMBNAIL_URL",
             "https://telegra.ph/file/0c32988168bbd4e78f99e.jpg"
@@ -69,7 +83,6 @@ class Config:
             "SONG_THUMBNAIL_DEFAULT",
             "https://telegra.ph/file/0c32988168bbd4e78f99e.jpg"
         )
-        # Compatibility aliases
         self.DEFAULT_THUMB = self.SONG_THUMBNAIL_DEFAULT
         self.START_IMG = self.START_THUMBNAIL_URL
         self.PING_IMG = self.PING_THUMBNAIL_URL
@@ -91,5 +104,6 @@ class Config:
             raise SystemExit(
                 f"Missing required environment variables in .env: {', '.join(missing)}"
             )
+
 
 config = Config()
