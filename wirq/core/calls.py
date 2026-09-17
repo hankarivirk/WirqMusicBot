@@ -5,7 +5,7 @@
 import os
 import time
 import asyncio
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, List
 
 from ntgcalls import (
     ConnectionNotFound,
@@ -14,12 +14,7 @@ from ntgcalls import (
     ConnectionError,
     TransportParseException,
 )
-from pyrogram.errors import (
-    ChatSendMediaForbidden,
-    ChatSendPhotosForbidden,
-    MessageIdInvalid,
-)
-from pyrogram.types import InputMediaPhoto, Message
+from pyrogram.types import Message
 from pytgcalls import PyTgCalls, exceptions, types
 from pytgcalls.pytgcalls_session import PyTgCallsSession
 
@@ -34,7 +29,7 @@ from wirq import (
     userbot,
     yt,
 )
-from wirq.helpers import Media, Track, buttons, utils
+from wirq.helpers import Media, Track, buttons
 
 class TgCall(PyTgCalls):
     def __init__(self):
@@ -142,7 +137,6 @@ class TgCall(PyTgCalls):
         if bass_level:
             ffmpeg_parts.append(f"-af bass=g={bass_level}")
 
-        # Construct stream with audio/video mode handling (Section 1)
         stream = types.MediaStream(
             media_path=media.file_path,
             audio_parameters=types.AudioQuality.HIGH,
@@ -169,13 +163,11 @@ class TgCall(PyTgCalls):
                 await db.track_played()
                 self.start_times[chat_id] = time.time()
 
-            # Retrieve dynamic status for player card
             loop_mode = await db.get_loop(chat_id)
             loop_str = "OFF" if loop_mode == 0 else ("SONG" if loop_mode == 1 else "QUEUE")
             auto_str = "ON" if await db.get_autoplay(chat_id) else "OFF"
             req_user = getattr(media, "user", None) or "@wirq4"
 
-            # Check thumbnail priority: Group > Global > ENV (Section 6)
             use_thumb = await db.is_thumb_enabled(chat_id)
             card_path = None
             if use_thumb and isinstance(media, Track):
@@ -221,7 +213,6 @@ class TgCall(PyTgCalls):
                         disable_web_page_preview=True,
                     )
                 media.message_id = sent.id
-                # Delete initial loading message
                 try:
                     await message.delete()
                 except Exception:
@@ -238,19 +229,15 @@ class TgCall(PyTgCalls):
         loop_mode = await db.get_loop(chat_id)
         current = queue.get_current(chat_id)
 
-        # 1. Loop current song (Section 3: Loop State 1)
         if loop_mode == 1 and current:
             return await self.replay(chat_id)
 
-        # 2. Loop entire queue (Section 3: Loop State 2)
         if loop_mode == 2 and current:
-            # Re-queue finished track to end of playlist
             queue.put(chat_id, current)
 
         async with queue.lock(chat_id):
             media = queue.get_next(chat_id)
 
-            # Cleanup previous now-playing message
             try:
                 if current and current.message_id:
                     await app.delete_messages(
@@ -262,18 +249,15 @@ class TgCall(PyTgCalls):
             except Exception:
                 pass
 
-            # If queue empty, handle Autoplay (Section 4)
             if not media and current and isinstance(current, Track):
                 is_autoplay = await db.get_autoplay(chat_id)
                 if is_autoplay:
-                    # Autoplay ON: Auto-fetch real YouTube related track
                     media = await yt.related(current.id, exclude=await queue.get_history(chat_id))
                     if media:
                         setattr(media, "user", "⚡ Autoplay Engine")
                         queue.put(chat_id, media)
                         media = queue.get_next(chat_id)
                 else:
-                    # Autoplay OFF: Display 3 real YouTube recommendations + "More" button
                     from py_yt import Recommendations
                     recs = await Recommendations.get(current.id, limit=12)
                     if recs:
@@ -299,7 +283,6 @@ class TgCall(PyTgCalls):
             _lang = await lang.get_lang(chat_id)
             msg = await app.send_message(chat_id=chat_id, text=_lang.get("play_next", "⏳ Loading next track..."))
 
-            # Automatic Stream Expiry Handling & Resolution (Section 1)
             retry_count = 0
             while not media.file_path and retry_count < 3:
                 try:
