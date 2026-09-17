@@ -1,6 +1,5 @@
 import pyrogram
 from pyrogram.enums import ParseMode, ChatMemberStatus
-from pyrogram.types import LinkPreviewOptions
 from wirq import config, logger
 
 class Bot(pyrogram.Client):
@@ -12,7 +11,6 @@ class Bot(pyrogram.Client):
             bot_token=config.BOT_TOKEN,
             parse_mode=ParseMode.HTML,
             max_concurrent_transmissions=7,
-            link_preview_options=LinkPreviewOptions(is_disabled=True),
         )
         self.owner = config.OWNER_ID
         self.logger = config.LOGGER_ID
