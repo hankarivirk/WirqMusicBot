@@ -7,6 +7,16 @@ import time
 import asyncio
 from typing import Optional, Dict, List
 
+# Compatibility shim for Pyrogram 2.x + pytgcalls expecting older exception names
+try:
+    import pyrogram.errors as _pyrogram_errors
+    if not hasattr(_pyrogram_errors, "GroupcallForbidden"):
+        class GroupcallForbidden(_pyrogram_errors.Forbidden):
+            pass
+        _pyrogram_errors.GroupcallForbidden = GroupcallForbidden
+except Exception:
+    pass
+
 from ntgcalls import (
     ConnectionNotFound,
     TelegramServerError,
