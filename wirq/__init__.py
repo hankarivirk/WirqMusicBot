@@ -3,6 +3,25 @@ import asyncio
 import logging
 from logging.handlers import RotatingFileHandler
 
+# Install compatibility aliases before any module imports pytgcalls.
+# Some pytgcalls releases import these legacy Pyrogram names directly.
+try:
+    import pyrogram.errors as _pyrogram_errors
+
+    for _legacy_name, _base_name in {
+        "GroupcallForbidden": "Forbidden",
+        "GroupcallInvalid": "BadRequest",
+    }.items():
+        if not hasattr(_pyrogram_errors, _legacy_name) and hasattr(_pyrogram_errors, _base_name):
+            setattr(
+                _pyrogram_errors,
+                _legacy_name,
+                type(_legacy_name, (getattr(_pyrogram_errors, _base_name),), {}),
+            )
+except Exception:
+    # Compatibility aliases must never prevent the bot from starting.
+    pass
+
 logging.basicConfig(
     format="[%(asctime)s - %(levelname)s] - %(name)s: %(message)s",
     datefmt="%d-%b-%y %H:%M:%S",
