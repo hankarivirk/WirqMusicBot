@@ -4,10 +4,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 # Install compatibility aliases before any module imports pytgcalls.
-# Some pytgcalls releases import these legacy Pyrogram names directly.
 try:
     import pyrogram.errors as _pyrogram_errors
-
     for _legacy_name, _base_name in {
         "GroupcallForbidden": "Forbidden",
         "GroupcallInvalid": "BadRequest",
@@ -19,7 +17,6 @@ try:
                 type(_legacy_name, (getattr(_pyrogram_errors, _base_name),), {}),
             )
 except Exception:
-    # Compatibility aliases must never prevent the bot from starting.
     pass
 
 logging.basicConfig(
@@ -49,7 +46,6 @@ boot = time.time()
 from wirq.core.dir import ensure_dirs
 ensure_dirs()
 
-# Initialize Queue and Thumbnails early to eliminate circular dependencies
 from wirq.helpers._queue import Queue
 from wirq.helpers._thumbnails import Thumbnail
 queue = Queue()
@@ -75,6 +71,8 @@ yt = YouTube()
 
 from wirq.core.calls import TgCall
 anon = TgCall()
+# Backwards-compatible public name used by plugins and __main__.
+calls = anon
 
 async def stop() -> None:
     logger.info("Stopping bot services...")
