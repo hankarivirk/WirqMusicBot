@@ -44,12 +44,19 @@ async def boot():
 
     await app.boot()
     await userbot.boot()
-    await calls.boot()
 
-    # Launch background periodic cleanup daemon (Section 13)
+    # Voice-call dependencies are optional at startup. A mismatched pytgcalls
+    # / Pyrogram installation must not take down the Telegram bot itself.
+    try:
+        await calls.boot()
+    except Exception as exc:
+        logger.exception(
+            "Voice-call service could not start; continuing in bot-only mode: %s",
+            exc,
+        )
+
     asyncio.create_task(cleanup_worker())
 
-    # Load all plugin modules
     for module in all_modules:
         importlib.import_module(f"wirq.plugins.{module}")
     logger.info(f"Loaded {len(all_modules)} feature modules successfully.")
