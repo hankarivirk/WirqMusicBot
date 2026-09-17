@@ -1,0 +1,32 @@
+# Environment & secrets
+.env
+*.session
+*.session-journal
+*.cookie
+wirq/cookies/*.txt
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Temp directories
+downloads/
+cache/
+*.jpg
+*.png
+*.webm
+*.mp3
+*.mp4
+log.txt
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# IDE files
+.vscode/
+.idea/

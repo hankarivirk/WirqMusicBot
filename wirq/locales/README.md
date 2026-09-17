@@ -1,0 +1,1 @@
+# Available Languages in Wirq Music Bot\n\nSupports: en, hi, pa, ar, de, es, fr, ja, my, pt, ru, tr, zh\n

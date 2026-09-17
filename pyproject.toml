@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wirqmusic"
+version = "3.2.0"
+description = "High-performance Telegram voice-chat music streaming bot"
+readme = "README.md"
+authors = [{ name = "Wirq", email = "wirq4@t.me" }]
+license = { text = "MIT" }
+requires-python = ">=3.10"
