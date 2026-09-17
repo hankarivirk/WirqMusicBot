@@ -1,4 +1,6 @@
-pyrogram==2.0.106
+# PyTgCalls 2.x requires newer Pyrogram raw API types than PyPI
+# Pyrogram 2.0.106 provides the bot API but lacks InputGroupCallSlug.
+pyrogram @ git+https://github.com/pyrogram/pyrogram.git
 py-tgcalls==2.3.3
 motor>=3.3.2
 pymongo>=4.6.1
