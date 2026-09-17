@@ -11,7 +11,7 @@ from aiohttp import web
 from wirq import (
     app,
     userbot,
-    calls,
+    anon as calls,
     db,
     yt,
     config,
