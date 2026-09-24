@@ -1,0 +1,9 @@
+*.pyc
+__pycache__/
+.env
+downloads/
+cache/
+*.session
+*.session-journal
+node_modules/
+.venv/

@@ -1,0 +1,65 @@
+{
+  "name": "MUSIC FLOW",
+  "description": "A clean Telegram music player built for fast search, quick streaming, and simple queue control.",
+  "keywords": [
+    "telegram",
+    "music",
+    "bot",
+    "streaming",
+    "pyrogram",
+    "pytgcalls"
+  ],
+  "repository": "",
+  "stack": "container",
+  "env": {
+    "API_ID": {
+      "description": "Telegram API ID",
+      "required": true
+    },
+    "API_HASH": {
+      "description": "Telegram API HASH",
+      "required": true
+    },
+    "BOT_TOKEN": {
+      "description": "Telegram Bot Token from @BotFather",
+      "required": true
+    },
+    "OWNER_ID": {
+      "description": "Telegram numeric User ID of the Owner",
+      "required": true
+    },
+    "LOGGER_ID": {
+      "description": "Telegram group/channel ID for logs",
+      "required": true
+    },
+    "MONGO_URL": {
+      "description": "MongoDB connection URI",
+      "required": true
+    },
+    "SESSION": {
+      "description": "Pyrogram string session for assistant userbot",
+      "required": true
+    },
+    "OWNER_URL": {
+      "description": "Optional contact URL for the Owner button",
+      "required": false
+    },
+    "START_IMG_URL": {
+      "description": "Optional start banner image URL",
+      "required": false
+    },
+    "DEFAULT_THUMB_URL": {
+      "description": "Optional fallback thumbnail URL",
+      "required": false
+    },
+    "PING_IMG_URL": {
+      "description": "Optional ping status image URL",
+      "required": false
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
